@@ -1,0 +1,80 @@
+﻿@model List<Neuron>
+
+<h1>List of Neurons</h1>
+
+<div style="display: inline-block;">
+    <form method="post" asp-action="Add">
+        <button type="submit">ADD</button>
+    </form>
+</div>
+
+<div style="display: inline-block;">
+    <form method="post" asp-action="Subtract">
+        <button type="submit">SUB</button>
+    </form>
+</div>
+
+
+@foreach (var neuron in Model)
+{
+    <form method="post" asp-action="Update">
+        <input type="hidden" name="index" value="@Model.IndexOf(neuron)">
+        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+            <div>Neuron Number (@Model.IndexOf(neuron))</div>
+        </div>
+        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+            <label style="margin-right: 10px;">x: <span data-field="x" data-index="@Model.IndexOf(neuron)">@neuron.x</span></label>
+            <button type="button" class="increment-button" data-field="x" data-index="@Model.IndexOf(neuron)">+</button>
+            <button type="button" class="decrement-button" data-field="x" data-index="@Model.IndexOf(neuron)">-</button>
+
+            <label style="margin-left: 10px; margin-right: 10px;">w: <span data-field="w" data-index="@Model.IndexOf(neuron)">@neuron.w</span></label>
+            <button type="button" class="increment-button" data-field="w" data-index="@Model.IndexOf(neuron)">+</button>
+            <button type="button" class="decrement-button" data-field="w" data-index="@Model.IndexOf(neuron)">-</button>
+        </div>
+        <input type="hidden" name="x" data-field="x" data-index="@Model.IndexOf(neuron)" value="@neuron.x">
+        <input type="hidden" name="w" data-field="w" data-index="@Model.IndexOf(neuron)" value="@neuron.w">
+        <button type="submit">Update</button>
+    </form>
+}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const incrementButtons = document.querySelectorAll(".increment-button");
+        const decrementButtons = document.querySelectorAll(".decrement-button");
+
+        const valueMap = new Map(); 
+        incrementButtons.forEach((button) => {
+            const field = button.getAttribute("data-field");
+            const index = button.getAttribute("data-index");
+            const span = document.querySelector(`[data-field="${field}"][data-index="${index}"]`);
+            valueMap.set(`${field}_${index}`, parseFloat(span.textContent.replace(',', '.'))); 
+            button.addEventListener("click", function () {
+                const currentValue = valueMap.get(`${field}_${index}`);
+                const newValue = (currentValue + 0.01).toFixed(2).replace('.', ','); 
+                span.textContent = newValue;
+                updateHiddenInput(field, index, newValue);
+                valueMap.set(`${field}_${index}`, parseFloat(newValue.replace(',', '.'))); 
+            });
+        });
+
+        decrementButtons.forEach((button) => {
+            const field = button.getAttribute("data-field");
+            const index = button.getAttribute("data-index");
+            const span = document.querySelector(`[data-field="${field}"][data-index="${index}"]`);
+            valueMap.set(`${field}_${index}`, parseFloat(span.textContent.replace(',', '.'))); 
+            button.addEventListener("click", function () {
+                const currentValue = valueMap.get(`${field}_${index}`);
+                const newValue = (currentValue - 0.01).toFixed(2).replace('.', ','); 
+                span.textContent = newValue;
+                updateHiddenInput(field, index, newValue);
+                valueMap.set(`${field}_${index}`, parseFloat(newValue.replace(',', '.'))); 
+            });
+        });
+
+        function updateHiddenInput(field, index, value) {
+            const input = document.querySelector(`input[name="${field}"][data-field="${field}"][data-index="${index}"]`);
+            input.value = value;
+        }
+    });
+</script>
+
