@@ -1,19 +1,27 @@
-﻿using Microsoft.AspNetCore.Session;
+﻿using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
+using Microsoft.AspNetCore.Session;
 using Newtonsoft.Json;
 
 namespace Project1_InteligentaArtificiala_.Models
 {
     public class NeuronViewModel
     {
-        public static List<Neuron> Neurons { get; private set; } = new List<Neuron>();
+        public static List<Input> Neurons { get; private set; } = new List<Input>() { new Input { x = 0.0, w = 0.0 } };
+        public static double GIN { get; set; }
+        public static double Activation { get; set; }
+        public static double g = 1;
+        public static double a = 1;
+        public static double theta = 0;
+
+        public static double OutputResult { get; set; }
+
         public void AddNeuron()
         {
-            Neurons.Add(new Neuron());
+            Neurons.Add(new Input());
         }
-
         public void SubtractNeuron()
         {
-            if (Neurons.Count > 0)
+            if (Neurons.Count > 1)
             {
                 Neurons.RemoveAt(Neurons.Count - 1);
             }

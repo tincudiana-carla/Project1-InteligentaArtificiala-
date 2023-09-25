@@ -4,7 +4,7 @@ namespace Project1_InteligentaArtificiala_.GeneratingGin
 {
     public class FunctionGIN
     {
-        public static double SUM(List<Neuron> neurons)
+        public static double SUM(List<Input> neurons)
         {
             double sum = 0.0;
             foreach (var neuron in neurons)
@@ -14,7 +14,7 @@ namespace Project1_InteligentaArtificiala_.GeneratingGin
             return sum;
         }
 
-        public static double PROD(List<Neuron> neurons)
+        public static double PROD(List<Input> neurons)
         {
             double prod = 1.0; 
             foreach (var neuron in neurons)
@@ -24,7 +24,7 @@ namespace Project1_InteligentaArtificiala_.GeneratingGin
             return prod;
         }
 
-        public static double MAX(List<Neuron> neurons)
+        public static double MAX(List<Input> neurons)
         {
             double maxValue = double.MinValue;
             foreach (var neuron in neurons)
@@ -38,7 +38,7 @@ namespace Project1_InteligentaArtificiala_.GeneratingGin
             return maxValue;
         }
 
-        public static double MIN(List<Neuron> neurons)
+        public static double MIN(List<Input> neurons)
         {
             double minValue = double.MaxValue;
             foreach (var neuron in neurons)
