@@ -8,7 +8,7 @@
         }
         public static double Sigmoid(double input, double g, double theta) //sigmoid
         {
-            return 1.0 / (1.0 + Math.Exp(-g * (input - theta)));
+            return 1.0 / (Math.Exp(-g * (input - theta)));
         }
         public static double Sign(double input) //semn
         {

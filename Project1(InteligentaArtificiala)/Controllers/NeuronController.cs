@@ -28,15 +28,22 @@ namespace Project1_InteligentaArtificiala_.Controllers
             return View("Index", NeuronViewModel.Neurons);
         }
 
-        public IActionResult Update(int index, double x, double w)
+        public IActionResult Update(List<Input> inputs)
         {
-            if (index >= 0 && index < NeuronViewModel.Neurons.Count)
+            foreach (var updatedNeuron in inputs)
             {
-                NeuronViewModel.Neurons[index].x = x;
-                NeuronViewModel.Neurons[index].w = w;
+                var existingNeuron = NeuronViewModel.Neurons.FirstOrDefault(n => n.Id == updatedNeuron.Id);
+
+                if (existingNeuron != null)
+                {
+                    existingNeuron.x = updatedNeuron.x;
+                    existingNeuron.w= updatedNeuron.w;
+                }
             }
             return RedirectToAction("Index");
         }
+
+
 
         public IActionResult CalculateGIN(string operation)
         {
@@ -114,34 +121,5 @@ namespace Project1_InteligentaArtificiala_.Controllers
             NeuronViewModel.theta = theta;
             return RedirectToAction("Index"); 
         }
-
-        //[HttpPost]
-        //public IActionResult CalculateOutputResult(string functionName)
-        //{
-        //    double result = 0;
-        //    switch(functionName)
-        //    {
-        //        case "Step":
-        //            result = OutputResult.OutputResult.Step();
-        //            break;
-        //        case "Sigmoid":
-        //            result = OutputResult.OutputResult.Sigmoid();
-        //            break;
-        //        case "Sign":
-        //            result = OutputResult.OutputResult.Sign();
-        //            break;
-        //        case "Tanh":
-        //            result = OutputResult.OutputResult.Tanh();
-        //            break;
-        //        case "LinearRamp":
-        //            result = OutputResult.OutputResult.LinearRamp();
-        //            break;
-        //    }
-        //    ViewBag.FunctionName = functionName;
-        //    ViewBag.OutputResult = result;
-        //    NeuronViewModel.OutputResult = result;
-        //    return View();
-        //}
-
     }
 }

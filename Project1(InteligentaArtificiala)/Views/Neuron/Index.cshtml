@@ -1,141 +1,178 @@
 ﻿@model List<Input>
 
-<h1>List of Neurons</h1>
-
-<div id="ginResult" style="text-align: center; margin-top: 10px;">
-    <p><strong style="font-size: 1.2em;">GIN Result:</strong> <span id="ginResultValue" style="font-size: 1.2em; color: red;">@ViewBag.GINResult</span></p>
-</div>
 
 
+<!DOCTYPE html>
+<html>
+<head>
 
-<div style="text-align: center; margin-top: 20px;">
-    <form method="post" asp-action="CalculateGIN" asp-route-operation="sum" style="display: inline;">
-        <button type="submit">SUM</button>
-    </form>
-    <form method="post" asp-action="CalculateGIN" asp-route-operation="prod" style="display: inline;">
-        <button type="submit">PROD</button>
-    </form>
-    <form method="post" asp-action="CalculateGIN" asp-route-operation="max" style="display: inline;">
-        <button type="submit">MAX</button>
-    </form>
-    <form method="post" asp-action="CalculateGIN" asp-route-operation="min" style="display: inline;">
-        <button type="submit">MIN</button>
-    </form>
-    
-</div>
+    <style>
+        .left {
+            float: left;
+            width: 25%; 
+        }
 
-<form method="post" asp-action="UpdateAGTheta">
-    <div style="text-align: center; margin-top: 20px;">
-        <label>a: <span id="aValue">@NeuronViewModel.a</span></label>
-        <button type="button" class="incrementt-button" style="background-color: green; color: white;" data-field="a">+</button>
-        <button type="button" class="decrementt-button" style="background-color: red; color: white;" data-field="a">-</button>
-        <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
+        .clear {
+            clear: both;
+        }
 
-        <label>g: <span id="gValue">@NeuronViewModel.g</span></label>
-        <button type="button" class="incrementt-button" style="background-color: green; color: white;" data-field="g">+</button>
-        <button type="button" class="decrementt-button" style="background-color: red; color: white;" data-field="g">-</button>
-        <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
+        .center {
+            margin-left: 25%; 
+            width: 50%; 
+        }
 
-        <label>theta: <span id="thetaValue">@NeuronViewModel.theta</span></label>
-        <button type="button" class="incrementt-button" style="background-color: green; color: white;" data-field="theta">+</button>
-        <button type="button" class="decrementt-button" style="background-color: red; color: white;" data-field="theta">-</button>
-        <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
+        .right {
+            margin-left: 75%; 
+            width: 25%;
+    </style>
+</head>
+<body>
+
+    <div class="left"></div>
+    <div class="clear"></div>
+    <div class="center"></div>
+    <div class="right"></div>
+</body>
+
+<head>
+    <h1>List of Neurons</h1>
+</head>
+<body>
+    <div class="left">
+        <div style="display: inline-block;">
+        <form method="post" asp-action="Add">
+            <button type="submit">ADD</button>
+        </form>
     </div>
-    <div style="display: flex; align-items: center; justify-content: center; margin-top: 20px;">
-        <button type="submit">Update</button>
-        <span style="margin-left: 10px;">set the values for a,g or/and theta</span>
+
+    <div style="display: inline-block;">
+        <form method="post" asp-action="Subtract">
+            <button type="submit">SUB</button>
+        </form>
     </div>
+        <form method="post" asp-action="Update">
+            @for (int index = 0; index < Model.Count; index++)
+            {
+                var neuron = Model[index];
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <div>Neuron Number (@index)</div>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <label style="margin-right: 10px;">x: <span data-field="x" data-index="@index">@neuron.x</span></label>
+                    <button type="button" class="increment-button" style="background-color: green; color: white;" data-field="x" data-index="@index">+</button>
+                    <button type="button" class="decrement-button" style="background-color: red; color: white;" data-field="x" data-index="@index">-</button>
+
+                    <label style="margin-left: 10px; margin-right: 10px;">w: <span data-field="w" data-index="@index">@neuron.w</span></label>
+                    <button type="button" class="increment-button" style="background-color: green; color: white;" data-field="w" data-index="@index">+</button>
+                    <button type="button" class="decrement-button" style="background-color: red; color: white;" data-field="w" data-index="@index">-</button>
+                </div>
+                <input type="hidden" name="inputs[@index].Id" value="@neuron.Id">
+                <input type="hidden" name="inputs[@index].x" data-field="x" data-index="@index" value="@neuron.x">
+                <input type="hidden" name="inputs[@index].w" data-field="w" data-index="@index" value="@neuron.w">
+            }
+            <button type="submit">Update</button>
+        </form>
 
 
-</form>
-
-
-
-<div style="text-align: center; margin-top: 20px;">
-    <p><strong style="font-size: 1.2em;">Activation:</strong> <span id="activationValue" style="font-size: 1.2em; color: red;">@ViewBag.Activation</span></p>
-</div>
-
-
-
-<div style="text-align: center; margin-top: 20px;">
-    <form method="post" asp-action="CalculateActivation" asp-route-function="Step" style="display: inline;">
-        <button type="submit">Step</button>
-        <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
-         <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
-          <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
-    </form>
-    <form method="post" asp-action="CalculateActivation" asp-route-function="Sigmoid" style="display: inline;">
-        <button type="submit">Sigmoid</button>
-        <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
-         <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
-          <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
-    </form>
-    <form method="post" asp-action="CalculateActivation" asp-route-function="Sign" style="display: inline;">
-        <button type="submit">Sign</button>
-        <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
-         <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
-          <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
-    </form>
-    <form method="post" asp-action="CalculateActivation" asp-route-function="Tanh" style="display: inline;">
-        <button type="submit">Tanh</button>
-        <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
-         <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
-          <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
-    </form>
-    <form method="post" asp-action="CalculateActivation" asp-route-function="LinearRamp" style="display: inline;">
-        <button type="submit">Linear Ramp</button>
-        <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
-        <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
-        <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
-    </form>
-</div>
-
-<div style="text-align: center; margin-top: 20px;">
-    <div style="float: right;">
-        <p><strong style="font-size: 1.5em;">Output Result:</strong> <span id="activationValue" style="font-size: 1.2em; color: red;">@ViewBag.OutputResult</span></p>
     </div>
-</div>
-
-
-
-
-
-
-
-<div style="display: inline-block;">
-    <form method="post" asp-action="Add">
-        <button type="submit">ADD</button>
-    </form>
-</div>
-
-<div style="display: inline-block;">
-    <form method="post" asp-action="Subtract">
-        <button type="submit">SUB</button>
-    </form>
-</div>
-
-@foreach (var neuron in Model)
-{
-    <form method="post" asp-action="Update">
-        <input type="hidden" name="index" value="@Model.IndexOf(neuron)">
-        <div style="display: flex; align-items: center; margin-bottom: 10px;">
-            <div>Neuron Number (@Model.IndexOf(neuron))</div>
+    <div class="center">
+        <div id="ginResult" style="text-align: center; margin-top: 10px;">
+            <p><strong style="font-size: 1.2em;">GIN Result:</strong> <span id="ginResultValue" style="font-size: 1.2em; color: red;">@ViewBag.GINResult</span></p>
         </div>
-        <div style="display: flex; align-items: center; margin-bottom: 10px;">
-            <label style="margin-right: 10px;">x: <span data-field="x" data-index="@Model.IndexOf(neuron)">@neuron.x</span></label>
-            <button type="button" class="increment-button" style="background-color: green; color: white;" data-field="x" data-index="@Model.IndexOf(neuron)">+</button>
-            <button type="button" class="decrement-button" style="background-color: red; color: white;" data-field="x" data-index="@Model.IndexOf(neuron)">-</button>
 
-            <label style="margin-left: 10px; margin-right: 10px;">w: <span data-field="w" data-index="@Model.IndexOf(neuron)">@neuron.w</span></label>
-            <button type="button" class="increment-button" style="background-color: green; color: white;" data-field="w" data-index="@Model.IndexOf(neuron)">+</button>
-            <button type="button" class="decrement-button" style="background-color: red; color: white;" data-field="w" data-index="@Model.IndexOf(neuron)">-</button>
+        <div style="text-align: center; margin-top: 20px;">
+            <form method="post" asp-action="CalculateGIN" asp-route-operation="sum" style="display: inline;">
+                <button type="submit">SUM</button>
+            </form>
+            <form method="post" asp-action="CalculateGIN" asp-route-operation="prod" style="display: inline;">
+                <button type="submit">PROD</button>
+            </form>
+            <form method="post" asp-action="CalculateGIN" asp-route-operation="max" style="display: inline;">
+                <button type="submit">MAX</button>
+            </form>
+            <form method="post" asp-action="CalculateGIN" asp-route-operation="min" style="display: inline;">
+                <button type="submit">MIN</button>
+            </form>
+
         </div>
-        <input type="hidden" name="x" data-field="x" data-index="@Model.IndexOf(neuron)" value="@neuron.x">
-        <input type="hidden" name="w" data-field="w" data-index="@Model.IndexOf(neuron)" value="@neuron.w">
-        <button type="submit">Update</button>
 
-    </form>
-}
+        <form method="post" asp-action="UpdateAGTheta">
+            <div style="text-align: center; margin-top: 20px;">
+                <label>a: <span id="aValue">@NeuronViewModel.a</span></label>
+                <button type="button" class="incrementt-button" style="background-color: green; color: white;" data-field="a">+</button>
+                <button type="button" class="decrementt-button" style="background-color: red; color: white;" data-field="a">-</button>
+                <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
+
+                <label>g: <span id="gValue">@NeuronViewModel.g</span></label>
+                <button type="button" class="incrementt-button" style="background-color: green; color: white;" data-field="g">+</button>
+                <button type="button" class="decrementt-button" style="background-color: red; color: white;" data-field="g">-</button>
+                <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
+
+                <label>theta: <span id="thetaValue">@NeuronViewModel.theta</span></label>
+                <button type="button" class="incrementt-button" style="background-color: green; color: white;" data-field="theta">+</button>
+                <button type="button" class="decrementt-button" style="background-color: red; color: white;" data-field="theta">-</button>
+                <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
+            </div>
+            <div style="display: flex; align-items: center; justify-content: center; margin-top: 20px;">
+                <button type="submit">Update</button>
+                <span style="margin-left: 10px;">set the values for a,g or/and theta</span>
+            </div>
+
+
+        </form>
+
+
+        <div style="text-align: center; margin-top: 20px;">
+            <p><strong style="font-size: 1.2em;">Activation:</strong> <span id="activationValue" style="font-size: 1.2em; color: red;">@ViewBag.Activation</span></p>
+        </div>
+
+
+        <div style="text-align: center; margin-top: 20px;">
+            <form method="post" asp-action="CalculateActivation" asp-route-function="Step" style="display: inline;">
+                <button type="submit">Step</button>
+                <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
+                <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
+                <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
+            </form>
+            <form method="post" asp-action="CalculateActivation" asp-route-function="Sigmoid" style="display: inline;">
+                <button type="submit">Sigmoid</button>
+                <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
+                <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
+                <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
+            </form>
+            <form method="post" asp-action="CalculateActivation" asp-route-function="Sign" style="display: inline;">
+                <button type="submit">Sign</button>
+                <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
+                <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
+                <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
+            </form>
+            <form method="post" asp-action="CalculateActivation" asp-route-function="Tanh" style="display: inline;">
+                <button type="submit">Tanh</button>
+                <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
+                <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
+                <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
+            </form>
+            <form method="post" asp-action="CalculateActivation" asp-route-function="LinearRamp" style="display: inline;">
+                <button type="submit">Linear Ramp</button>
+                <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
+                <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
+                <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
+            </form>
+        </div>
+    </div>
+     <div class="right">
+        <div style="text-align: center; margin-top: 20px;">
+            <div style="float: right;">
+                <p><strong style="font-size: 1.5em;">Output Result:</strong> <span id="activationValue" style="font-size: 1.2em; color: red;">@ViewBag.OutputResult</span></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
 
 
 
@@ -144,18 +181,18 @@
         const incrementButtons = document.querySelectorAll(".increment-button");
         const decrementButtons = document.querySelectorAll(".decrement-button");
 
-        const valueMap = new Map(); 
+        const valueMap = new Map();
         incrementButtons.forEach((button) => {
             const field = button.getAttribute("data-field");
             const index = button.getAttribute("data-index");
             const span = document.querySelector(`[data-field="${field}"][data-index="${index}"]`);
-            valueMap.set(`${field}_${index}`, parseFloat(span.textContent.replace(',', '.'))); 
+            valueMap.set(`${field}_${index}`, parseFloat(span.textContent.replace(',', '.')));
             button.addEventListener("click", function () {
                 const currentValue = valueMap.get(`${field}_${index}`);
-                const newValue = (currentValue + 0.01).toFixed(2).replace('.', ','); 
+                const newValue = (currentValue + 0.01).toFixed(2).replace('.', ',');
                 span.textContent = newValue;
                 updateHiddenInput(field, index, newValue);
-                valueMap.set(`${field}_${index}`, parseFloat(newValue.replace(',', '.'))); 
+                valueMap.set(`${field}_${index}`, parseFloat(newValue.replace(',', '.')));
             });
         });
 
@@ -163,22 +200,23 @@
             const field = button.getAttribute("data-field");
             const index = button.getAttribute("data-index");
             const span = document.querySelector(`[data-field="${field}"][data-index="${index}"]`);
-            valueMap.set(`${field}_${index}`, parseFloat(span.textContent.replace(',', '.'))); 
+            valueMap.set(`${field}_${index}`, parseFloat(span.textContent.replace(',', '.')));
             button.addEventListener("click", function () {
                 const currentValue = valueMap.get(`${field}_${index}`);
-                const newValue = (currentValue - 0.01).toFixed(2).replace('.', ','); 
+                const newValue = (currentValue - 0.01).toFixed(2).replace('.', ',');
                 span.textContent = newValue;
                 updateHiddenInput(field, index, newValue);
-                valueMap.set(`${field}_${index}`, parseFloat(newValue.replace(',', '.'))); 
+                valueMap.set(`${field}_${index}`, parseFloat(newValue.replace(',', '.')));
             });
         });
 
         function updateHiddenInput(field, index, value) {
-            const input = document.querySelector(`input[name="${field}"][data-field="${field}"][data-index="${index}"]`);
+            const input = document.querySelector(`input[name="inputs[${index}].${field}"]`);
             input.value = value;
         }
     });
 </script>
+
 
 
 <script>
