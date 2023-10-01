@@ -14,14 +14,14 @@ namespace Project1_InteligentaArtificiala_.GeneratingGin
             return sum;
         }
 
-        public static double PROD(List<Input> neurons)
+        public static string PROD(List<Input> neurons)
         {
             double prod = 1.0; 
             foreach (var neuron in neurons)
             {
                 prod *= neuron.x * neuron.w;
             }
-            return prod;
+            return prod.ToString("0.0000000000000000");
         }
 
         public static double MAX(List<Input> neurons)

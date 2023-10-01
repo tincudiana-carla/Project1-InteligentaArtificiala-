@@ -51,18 +51,22 @@ namespace Project1_InteligentaArtificiala_.Controllers
             {
                 case "sum":
                     NeuronViewModel.GIN = FunctionGIN.SUM(NeuronViewModel.Neurons);
+                    ViewBag.GINResult = NeuronViewModel.GIN;
                     break;
                 case "prod":
-                    NeuronViewModel.GIN = FunctionGIN.PROD(NeuronViewModel.Neurons);
+                    string prodString = FunctionGIN.PROD(NeuronViewModel.Neurons);
+                    NeuronViewModel.GIN = double.Parse(prodString);
+                    ViewBag.GINResult = prodString;
                     break;
                 case "max":
                     NeuronViewModel.GIN = FunctionGIN.MAX(NeuronViewModel.Neurons);
+                    ViewBag.GINResult = NeuronViewModel.GIN;
                     break;
                 case "min":
                     NeuronViewModel.GIN = FunctionGIN.MIN(NeuronViewModel.Neurons);
+                    ViewBag.GINResult = NeuronViewModel.GIN;
                     break;
             }
-            ViewBag.GINResult = NeuronViewModel.GIN;
             return View("Index", NeuronViewModel.Neurons);
         }
 
@@ -71,32 +75,33 @@ namespace Project1_InteligentaArtificiala_.Controllers
         {
             double gin = NeuronViewModel.GIN;
             double result;
-            double outputResult = NeuronViewModel.OutputResult;
             switch (function)
             {
                 case "Step":
                     result = Activation.Step(gin);
-                    outputResult = OutputResult.OutputResult.Step(result);
+                    NeuronViewModel.function = function;
                     break;
 
                 case "Sigmoid":
                     result = Activation.Sigmoid(gin, g, theta);
-                    outputResult = OutputResult.OutputResult.Sigmoid(result);
+                    NeuronViewModel.function = function;
                     break;
 
                 case "Sign":
                     result = Activation.Sign(gin);
-                    outputResult = OutputResult.OutputResult.Sign(result);
+                    NeuronViewModel.function = function;
                     break;
 
                 case "Tanh":
-                    result = Activation.Tanh(gin, g, theta);
-                    outputResult = OutputResult.OutputResult.Tanh(result);
+                    string decimalResult = Activation.Tanh(gin, g, theta);
+                    NeuronViewModel.Activation = double.Parse(decimalResult);
+                    result = NeuronViewModel.Activation;
+                    NeuronViewModel.function = function;
                     break;
 
                 case "LinearRamp":
                     result = Activation.LinearRamp(gin, a);
-                    outputResult = OutputResult.OutputResult.LinearRamp(result);
+                    NeuronViewModel.function = function;
                     break;
 
                 default:
@@ -105,14 +110,47 @@ namespace Project1_InteligentaArtificiala_.Controllers
             }
 
             ViewBag.Activation = result;
-            ViewBag.OutputResult = outputResult;
             NeuronViewModel.Activation = result;
-            NeuronViewModel.OutputResult = outputResult;
             NeuronViewModel.a = a;
             NeuronViewModel.g = g;
             NeuronViewModel.theta = theta;
             return View("Index", NeuronViewModel.Neurons);
         }
+        [HttpPost]
+        public IActionResult CalculateOutputResult()
+        {
+            double activation = NeuronViewModel.Activation;
+            double result;
+            string activationFunction = NeuronViewModel.function;
+            switch (activationFunction)
+            {
+                case "Step":
+                    result = OutputResult.OutputResult.Step(activation);
+                    break;
+                case "Sigmoid":
+                    result = OutputResult.OutputResult.Sigmoid(activation);
+                    break;
+                case "Sign":
+                    result = OutputResult.OutputResult.Sign(activation);
+                    break;
+                case "Tanh":
+                    result = OutputResult.OutputResult.Tanh(activation);
+                    break;
+                case "LinearRamp":
+                    result = OutputResult.OutputResult.LinearRamp(activation);
+                    break;
+                default:
+                    result = 0; 
+                    break;
+            }
+
+            NeuronViewModel.OutputResult = result;
+            ViewBag.OutputResult = result;
+            return View("Index", NeuronViewModel.Neurons);
+        }
+
+
+
         [HttpPost]
         public IActionResult UpdateAGTheta(double a, double g, double theta)
         {
@@ -121,5 +159,15 @@ namespace Project1_InteligentaArtificiala_.Controllers
             NeuronViewModel.theta = theta;
             return RedirectToAction("Index"); 
         }
+
+        [HttpPost]
+        public IActionResult ShowFloatOutputResult()
+        {
+            NeuronViewModel.OutputResult = NeuronViewModel.Activation;
+            ViewBag.OutputResult = NeuronViewModel.OutputResult;
+            return View("Index", NeuronViewModel.Neurons);
+        }
     }
+
+    
 }

@@ -12,10 +12,9 @@ namespace Project1_InteligentaArtificiala_.OutputResult
         }
         public static double Sigmoid(double activation) //sigmoid
         {
-            activation = NeuronViewModel.Activation;
             if (activation >= 0.5)
                 return 1;
-            return 0;
+            else return 0;
         }
         public static double Sign(double activation) //semn
         {

@@ -12,6 +12,7 @@ namespace Project1_InteligentaArtificiala_.Models
         public static double g = 1;
         public static double a = 1;
         public static double theta = 0;
+        public static string function;
 
         private static int currentId = 0;
         public static double OutputResult { get; set; }

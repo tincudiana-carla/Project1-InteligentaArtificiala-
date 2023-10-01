@@ -11,7 +11,6 @@
             float: left;
             width: 25%; 
         }
-
         .clear {
             clear: both;
         }
@@ -22,12 +21,45 @@
         }
 
         .right {
-            margin-left: 75%; 
+            margin-left: 50%; 
             width: 25%;
+        }
+
+        .output-container {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: white;
+            text-align: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ccc;
+            z-index: 1000; /* Set a higher z-index to ensure it's above other elements */
+        }
+
+        .content {
+            margin-top: 60px; /* Adjust the margin-top to provide space between output and content below */
+        }
+
+
+    </style>
+    <style>
+        .button-wrapper {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .activation-button {
+            min-width: 100px;
+            margin-right: 10px;
+        }
+
+        .parameter-text {
+            text-align: left;
+        }
+
     </style>
 </head>
 <body>
-
     <div class="left"></div>
     <div class="clear"></div>
     <div class="center"></div>
@@ -35,7 +67,7 @@
 </body>
 
 <head>
-    <h1>List of Neurons</h1>
+    <h1>List of Inputs</h1>
 </head>
 <body>
     <div class="left">
@@ -95,7 +127,7 @@
             </form>
 
         </div>
-
+        <p style="margin-bottom: 70px;">
         <form method="post" asp-action="UpdateAGTheta">
             <div style="text-align: center; margin-top: 20px;">
                 <label>a: <span id="aValue">@NeuronViewModel.a</span></label>
@@ -122,46 +154,117 @@
         </form>
 
 
-        <div style="text-align: center; margin-top: 20px;">
-            <p><strong style="font-size: 1.2em;">Activation:</strong> <span id="activationValue" style="font-size: 1.2em; color: red;">@ViewBag.Activation</span></p>
-        </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <p>
+                    <strong style="font-size: 1.2em;">Activation:</strong>
+                    <span id="activationValue" style="font-size: 1.2em; color: red;">
+                        @if (ViewBag.Activation != null)
+                        {
+                            var formattedActivation = ((double)ViewBag.Activation).ToString("F20");
+                            double parsedActivation;
+                            if (double.TryParse(formattedActivation, out parsedActivation))
+                            {
+                                if (parsedActivation == (int)parsedActivation)
+                                {
+                                    <text>@parsedActivation.ToString("F0")</text>
+                                }
+                                else
+                                {
+                                    <text>@formattedActivation</text>
+                                }
+                            }
+                            else
+                            {
+                                <text>@formattedActivation</text>
+                            }
+                        }
+                    </span>
+                </p>
+            </div>
 
 
-        <div style="text-align: center; margin-top: 20px;">
-            <form method="post" asp-action="CalculateActivation" asp-route-function="Step" style="display: inline;">
-                <button type="submit">Step</button>
-                <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
-                <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
-                <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
-            </form>
-            <form method="post" asp-action="CalculateActivation" asp-route-function="Sigmoid" style="display: inline;">
-                <button type="submit">Sigmoid</button>
-                <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
-                <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
-                <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
-            </form>
-            <form method="post" asp-action="CalculateActivation" asp-route-function="Sign" style="display: inline;">
-                <button type="submit">Sign</button>
-                <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
-                <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
-                <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
-            </form>
-            <form method="post" asp-action="CalculateActivation" asp-route-function="Tanh" style="display: inline;">
-                <button type="submit">Tanh</button>
-                <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
-                <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
-                <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
-            </form>
-            <form method="post" asp-action="CalculateActivation" asp-route-function="LinearRamp" style="display: inline;">
-                <button type="submit">Linear Ramp</button>
-                <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
-                <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
-                <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
-            </form>
-        </div>
+            <div style="text-align:leftt; margin-top: 20px; margin-left : 33%">
+                <form method="post" asp-action="CalculateActivation" asp-route-function="Step">
+                    <div class="button-wrapper">
+                        <button type="submit" class="activation-button">Step</button>
+                        <span class="parameter-text">Parameters: None</span>
+                    </div>
+                    <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
+                    <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
+                    <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
+                </form>
+
+                <form method="post" asp-action="CalculateActivation" asp-route-function="Sigmoid">
+                    <div class="button-wrapper">
+                        <button type="submit" class="activation-button">Sigmoid</button>
+                        <span class="parameter-text">Parameters: g, theta</span>
+                    </div>
+                    <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
+                    <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
+                    <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
+                </form>
+
+                <form method="post" asp-action="CalculateActivation" asp-route-function="Sign">
+                    <div class="button-wrapper">
+                        <button type="submit" class="activation-button">Sign</button>
+                        <span class="parameter-text">Parameters: None</span>
+                    </div>
+                    <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
+                    <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
+                    <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
+                </form>
+
+                <form method="post" asp-action="CalculateActivation" asp-route-function="Tanh">
+                    <div class="button-wrapper">
+                        <button type="submit" class="activation-button">Tanh</button>
+                        <span class="parameter-text">Parameters: g, theta</span>
+                    </div>
+                    <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
+                    <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
+                    <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
+                </form>
+
+                <form method="post" asp-action="CalculateActivation" asp-route-function="LinearRamp">
+                    <div class="button-wrapper">
+                        <button type="submit" class="activation-button">Linear Ramp</button>
+                        <span class="parameter-text">Parameters: a</span>
+                    </div>
+                    <input type="hidden" id="thetaInput" name="theta" value="@NeuronViewModel.theta">
+                    <input type="hidden" id="gInput" name="g" value="@NeuronViewModel.g">
+                    <input type="hidden" id="aInput" name="a" value="@NeuronViewModel.a">
+                </form>
+            </div>
+
     </div>
      <div class="right">
         <div style="text-align: center; margin-top: 20px;">
+            <form method="post" asp-action="CalculateOutputResult">
+                <button type="submit">BINAR</button>
+            </form>
+            <form method="post" asp-action="ShowFloatOutputResult">
+                <button type="submit">FLOAT</button>
+                @if (ViewBag.OutputResult != null)
+                {
+                    var formattedOutput = ((double)ViewBag.OutputResult).ToString("F20");
+                    double parsedOutput;
+                    if (double.TryParse(formattedOutput, out parsedOutput))
+                    {
+                        if (parsedOutput == (int)parsedOutput)
+                        {
+                            ViewBag.OutputResult = parsedOutput;
+                        }
+                        else
+                        {
+                            ViewBag.OutputResult = formattedOutput;
+                        }
+                    }
+                    else
+                    {
+                        ViewBag.OutputResult = formattedOutput;
+                    }
+                }
+            </form>
+
             <div style="float: right;">
                 <p><strong style="font-size: 1.5em;">Output Result:</strong> <span id="activationValue" style="font-size: 1.2em; color: red;">@ViewBag.OutputResult</span></p>
             </div>
@@ -169,11 +272,6 @@
     </div>
 </body>
 </html>
-
-
-
-
-
 
 
 <script>
